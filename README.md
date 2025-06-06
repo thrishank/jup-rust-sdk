@@ -1,6 +1,6 @@
 # Jup-Rust-SDK
 
-> 🚀 A Rust SDK to interact with the [Jupiter Aggregator](https://jup.ag) APIs.  
+> A Rust SDK to interact with the [Jupiter Aggregator](https://jup.ag) APIs.  
 > Easily fetch token quotes and execute swaps programmatically from your Rust applications.
 
 ## Installation 🛠️
@@ -18,11 +18,11 @@ jup-ag-sdk = "0.1.5"
 
 ## Features
 
-- ✅ Complete API Coverage - All Jupiter APIs included Ultra, Swap, Trigger, Recurring, Token and Price
-- 🧱 Strongly typed – Full Rust structs for all request/response types
-- 🧠 Composable builders – Chainable methods to customize request payloads (e.g. taker, referral, fee, excluded routers)
+- Complete API Coverage - All Jupiter APIs included Ultra, Swap, Trigger, Recurring, Token and Price
+- Strongly typed – Full Rust structs for all request/response types
+- Composable builders – Chainable methods to customize request payloads (e.g. taker, referral, fee, excluded routers)
 
-## Usage 💡
+## Usage
 
 Below is a simple example that shows how to fetch and execute an Ultra order with the SDK. For detailed example checkout [`examples/`](https://github.com/Jupiter-DevRel/jup-rust-sdk/tree/main/examples)
 
