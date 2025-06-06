@@ -18,7 +18,7 @@ PRIVATE_KEY=your_base58_private_key_here
 
 ## Contents
 
-### 1. [`swap.rs`](https://github.com/thrishank/jup-ag-sdk/blob/main/examples/src/swap.rs)
+### 1. [`swap.rs`](https://github.com/Jupiter-DevRel/jup-rust-sdk/blob/main/examples/src/swap.rs)
 
 This example shows how to:
 
@@ -29,7 +29,7 @@ This example shows how to:
 
 > &#9888; Swap API gives flexibility but requires you to handle slippage, fees, transaction broadcasting, and error parsing manually.
 
-### 2. [`ultra.rs`](https://github.com/thrishank/jup-ag-sdk/blob/main/examples/src/ultra.rs)
+### 2. [`ultra.rs`](https://github.com/Jupiter-DevRel/jup-rust-sdk/blob/main/examples/src/ultra.rs)
 
 This example demonstrates how to:
 
@@ -42,7 +42,7 @@ This example demonstrates how to:
 
 > ✅ Ultra API is recommended for most use cases unless you need deep transaction customization.
 
-### 3. [`token.rs`](https://github.com/thrishank/jup-ag-sdk/blob/main/examples/src/token.rs)
+### 3. [`token.rs`](https://github.com/Jupiter-DevRel/jup-rust-sdk/blob/main/examples/src/token.rs)
 
 This example demonstrates how to:
 
@@ -51,7 +51,7 @@ This example demonstrates how to:
 - Check token warnings using Jupiter’s shield API
 - check token_api.rs docs for more token-related functions.
 
-### 4. [`trigger.rs`](https://github.com/thrishank/jup-ag-sdk/blob/main/examples/src/trigger.rs)
+### 4. [`trigger.rs`](https://github.com/Jupiter-DevRel/jup-rust-sdk/blob/main/examples/src/trigger.rs)
 
 This example demonstrates how to:
 
