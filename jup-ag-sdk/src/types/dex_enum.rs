@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize, Serializer};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum DexEnum {
     Woofi,
     PumpFun,

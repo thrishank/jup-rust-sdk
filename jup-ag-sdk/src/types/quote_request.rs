@@ -44,8 +44,6 @@ pub struct QuoteRequest {
     /// A list of DEXes to exclusively include in routing.
     ///
     /// Example: `["Orca", "Meteora+DLMM"]`
-    /// TODO: add the list of dexes avaliable
-    /// refer: https://github.com/Jupiter-DevRel/jup-ag-sdk/blob/main/jup_ag_sdk/models/common/dex_enum.py
     #[serde(serialize_with = "dex_vec_to_comma_string")]
     pub dexes: Option<Vec<DexEnum>>,
 
