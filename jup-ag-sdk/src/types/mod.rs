@@ -1,6 +1,9 @@
 pub mod quote_request;
 pub use quote_request::*;
 
+pub mod dex_enum;
+pub use dex_enum::*;
+
 pub mod quote_response;
 pub use quote_response::*;
 
