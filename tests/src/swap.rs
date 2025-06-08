@@ -2,7 +2,7 @@
 mod swap_tests {
     use jup_ag_sdk::{
         JupiterClient,
-        types::{QuoteGetSwapModeEnum, QuoteRequest, SwapRequest},
+        types::{DexEnum, QuoteGetSwapModeEnum, QuoteRequest, SwapRequest},
     };
 
     use crate::common::{
@@ -27,8 +27,8 @@ mod swap_tests {
         let request = QuoteRequest::new(SOL_MINT, JUP_MINT, TEST_AMOUNT)
             .slippage_bps(DEFAULT_SLIPPAGE_BPS)
             .swap_mode(QuoteGetSwapModeEnum::ExactOut)
-            .dexes(vec!["Orca".to_string(), "Meteora+DLMM".to_string()])
-            .exclude_dexes(vec!["Raydium".to_string()])
+            .dexes(vec![DexEnum::OrcaV1, DexEnum::MeteoraDlmm])
+            .exclude_dexes(vec![DexEnum::Raydium])
             .restrict_intermediate_tokens(false)
             .only_direct_routes(true)
             .as_legacy_transaction(false)
@@ -51,12 +51,12 @@ mod swap_tests {
 
         assert_eq!(
             request.dexes,
-            Some(vec!["Orca".to_string(), "Meteora+DLMM".to_string()]),
+            Some(vec![DexEnum::OrcaV1, DexEnum::MeteoraDlmm]),
             "dexes should match"
         );
         assert_eq!(
             request.exclude_dexes,
-            Some(vec!["Raydium".to_string()]),
+            Some(vec![DexEnum::Raydium]),
             "excluded dexes should match"
         );
 
