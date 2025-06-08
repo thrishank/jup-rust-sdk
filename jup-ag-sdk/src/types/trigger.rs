@@ -165,7 +165,8 @@ pub struct TriggerResponse {
     pub transaction: String,
 
     /// Base-58 account which is the Trigger Order account
-    pub order: String,
+    #[serde(default)]
+    pub order: Option<String>,
 
     pub code: u8,
 }
@@ -187,6 +188,22 @@ impl ExecuteTriggerOrder {
             signed_transaction: signed_transaction.to_string(),
         }
     }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ExecuteTriggerOrderResponse {
+    /// The code of the response
+    pub code: u8,
+
+    /// The base-58 signed transaction to execute
+    pub signature: String,
+
+    /// status of the transaction
+    pub status: String,
+
+    /// The base-58 account which is the Trigger Order account
+    #[serde(default)]
+    pub order: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -226,6 +243,33 @@ pub struct CancelTriggerOrders {
     /// Default value: auto
     #[serde(skip_serializing_if = "Option::is_none")]
     pub compute_unit_price: Option<String>,
+}
+
+impl CancelTriggerOrders {
+    pub fn new(maker: &str, orders: Vec<String>) -> Self {
+        Self {
+            maker: maker.to_string(),
+            order: orders,
+            compute_unit_price: None,
+        }
+    }
+
+    pub fn compute_unit_price(mut self, price: &str) -> Self {
+        self.compute_unit_price = Some(price.to_string());
+        self
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CancelTriggerOrdersResponse {
+    /// Required to make a request to /execute
+    pub request_id: String,
+
+    /// Unsigned base-64 encoded transaction
+    pub transactions: Vec<String>,
+
+    pub code: u8,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
