@@ -162,7 +162,12 @@ pub struct TriggerResponse {
     pub request_id: String,
 
     /// Unsigned base-64 encoded transaction
+    #[serde(default)]
     pub transaction: String,
+
+    /// cancel trigger orders
+    #[serde(default)]
+    pub transactions: Option<Vec<String>>,
 
     /// Base-58 account which is the Trigger Order account
     #[serde(default)]
@@ -221,6 +226,9 @@ pub struct CancelTriggerOrder {
 }
 
 impl CancelTriggerOrder {
+    /// Arguments:
+    /// maker: &str - The maker's wallet address
+    /// order: &str - The base-58 account which is the Trigger Order account
     pub fn new(maker: &str, order: &str) -> Self {
         Self {
             maker: maker.to_string(),
@@ -246,6 +254,9 @@ pub struct CancelTriggerOrders {
 }
 
 impl CancelTriggerOrders {
+    /// Arguments:
+    /// maker: &str - The maker's wallet address
+    /// orders: Vec<String> - Vector of base-58 accounts which are the Trigger Order accounts
     pub fn new(maker: &str, orders: Vec<String>) -> Self {
         Self {
             maker: maker.to_string(),
@@ -254,22 +265,11 @@ impl CancelTriggerOrders {
         }
     }
 
+    /// Sets the compute unit price in microlamports
     pub fn compute_unit_price(mut self, price: &str) -> Self {
         self.compute_unit_price = Some(price.to_string());
         self
     }
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct CancelTriggerOrdersResponse {
-    /// Required to make a request to /execute
-    pub request_id: String,
-
-    /// Unsigned base-64 encoded transaction
-    pub transactions: Vec<String>,
-
-    pub code: u8,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

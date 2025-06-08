@@ -2,9 +2,8 @@ use crate::{
     JupiterClientError,
     error::handle_response,
     types::{
-        CancelTriggerOrder, CancelTriggerOrders, CancelTriggerOrdersResponse, CreateTriggerOrder,
-        ExecuteTriggerOrder, ExecuteTriggerOrderResponse, GetTriggerOrders, OrderResponse,
-        TriggerResponse,
+        CancelTriggerOrder, CancelTriggerOrders, CreateTriggerOrder, ExecuteTriggerOrder,
+        ExecuteTriggerOrderResponse, GetTriggerOrders, OrderResponse, TriggerResponse,
     },
 };
 
@@ -188,7 +187,7 @@ impl JupiterClient {
     pub async fn cancel_trigger_orders(
         &self,
         data: &CancelTriggerOrders,
-    ) -> Result<CancelTriggerOrdersResponse, JupiterClientError> {
+    ) -> Result<TriggerResponse, JupiterClientError> {
         let response = match self
             .client
             .post(format!("{}/trigger/v1/cancelOrders", self.base_url))
@@ -202,12 +201,59 @@ impl JupiterClient {
 
         let response = handle_response(response).await?;
 
-        match response.json::<CancelTriggerOrdersResponse>().await {
+        match response.json::<TriggerResponse>().await {
             Ok(cancel_order_response) => Ok(cancel_order_response),
             Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
         }
     }
 
+    /// Retrieves existing trigger orders for a user wallet
+    ///
+    /// # Arguments
+    /// * `data` - `&GetTriggerOrders` - Query parameters containing:
+    ///   - `user: String` - User wallet address to retrieve orders for
+    ///   - `order_status: OrderStatus` - Filter by order status (Active or History)
+    ///   - `page: Option<String>` - Page number for pagination (default: 1)
+    ///   - `include_failed_tx: Option<String>` - Include failed transactions ("true"/"false")
+    ///   - `input_mint: Option<String>` - Filter by input token mint address
+    ///   - `output_mint: Option<String>` - Filter by output token mint address
+    ///
+    /// # Returns
+    /// * `Result<OrderResponse, JupiterClientError>` - Success returns OrderResponse with:
+    ///   - `user: String` - User wallet address
+    ///   - `order_status: String` - Current order status filter
+    ///   - `orders: Vec<Order>` - List of trigger orders with detailed information
+    ///   - `total_pages: u32` - Total number of pages available
+    ///   - `page: u32` - Current page number
+    ///
+    /// # Example
+    /// ```rust
+    /// use jupiter_client::types::{GetTriggerOrders, OrderStatus};
+    ///
+    /// // Get active orders for a user
+    /// let get_orders = GetTriggerOrders::new(
+    ///     "YourWalletAddress...",
+    ///     OrderStatus::Active
+    /// )
+    /// .include_failed_tx(false)
+    /// .input_mint("So11111111111111111111111111111111111111112"); // Filter by SOL
+    ///
+    /// let response = client.get_trigger_orders(&get_orders).await?;
+    /// println!("Found {} orders on page {} of {}",
+    ///     response.orders.len(),
+    ///     response.page,
+    ///     response.total_pages
+    /// );
+    ///
+    /// // Access individual order details
+    /// for order in response.orders {
+    ///     println!("Order {}: {} -> {}",
+    ///         order.order_key,
+    ///         order.making_amount,
+    ///         order.taking_amount
+    ///     );
+    /// }
+    /// ```
     pub async fn get_trigger_orders(
         &self,
         data: &GetTriggerOrders,
