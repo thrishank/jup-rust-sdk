@@ -195,7 +195,7 @@ pub struct UltraOrderResponse {
 
     pub prioritization_fee_lamports: u64,
 
-    pub swap_type: SwapType,
+    pub swap_type: String,
 
     #[serde(default)]
     pub transaction: Option<String>,
@@ -220,15 +220,7 @@ pub struct UltraOrderResponse {
     pub platform_fee: Option<PlatformFee>,
 
     #[serde(default)]
-    pub expire_at: Option<u64>,
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Copy)]
-#[serde(rename_all = "lowercase")]
-pub enum SwapType {
-    Aggregator,
-    Rfq,
-    Hashflow,
+    pub expire_at: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
