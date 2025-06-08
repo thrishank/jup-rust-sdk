@@ -66,10 +66,7 @@ mod ultra_tests {
             "transaction should not be empty"
         );
 
-        assert!(
-            !create_order.order.is_empty(),
-            "signature should not be empty"
-        );
+        assert!(create_order.order.is_some(), "order should not be empty");
     }
 
     #[tokio::test]
