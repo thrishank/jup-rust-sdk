@@ -169,7 +169,7 @@ pub struct TriggerResponse {
     #[serde(default)]
     pub transactions: Option<Vec<String>>,
 
-    /// Base-58 account which is the Trigger Order account
+    /// solana PDA Trigger Order account
     #[serde(default)]
     pub order: Option<String>,
 
@@ -197,16 +197,15 @@ impl ExecuteTriggerOrder {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ExecuteTriggerOrderResponse {
-    /// The code of the response
     pub code: u8,
 
-    /// The base-58 signed transaction to execute
+    /// transaction signature
     pub signature: String,
 
     /// status of the transaction
     pub status: String,
 
-    /// The base-58 account which is the Trigger Order account
+    /// solana PDA Trigger Order account
     #[serde(default)]
     pub order: Option<String>,
 }
@@ -214,9 +213,10 @@ pub struct ExecuteTriggerOrderResponse {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CancelTriggerOrder {
+    /// maker address
     pub maker: String,
 
-    /// Base-58 account which is the Trigger Order account
+    /// solana PDA Trigger Order account
     pub order: String,
 
     /// In microlamports, defaults to 95th percentile of priority fees
@@ -228,7 +228,7 @@ pub struct CancelTriggerOrder {
 impl CancelTriggerOrder {
     /// Arguments:
     /// maker: &str - The maker's wallet address
-    /// order: &str - The base-58 account which is the Trigger Order account
+    /// order: &str - The solana PDA Trigger Order account
     pub fn new(maker: &str, order: &str) -> Self {
         Self {
             maker: maker.to_string(),
@@ -243,7 +243,7 @@ impl CancelTriggerOrder {
 pub struct CancelTriggerOrders {
     pub maker: String,
 
-    /// Base-58 account which is the Trigger Order account
+    /// solana PDA Trigger Order account
     #[serde(serialize_with = "to_comma_string")]
     pub order: Vec<String>,
 
@@ -256,7 +256,7 @@ pub struct CancelTriggerOrders {
 impl CancelTriggerOrders {
     /// Arguments:
     /// maker: &str - The maker's wallet address
-    /// orders: Vec<String> - Vector of base-58 accounts which are the Trigger Order accounts
+    /// orders: Vec<String> - Vector of solana PDA Trigger Order accounts
     pub fn new(maker: &str, orders: Vec<String>) -> Self {
         Self {
             maker: maker.to_string(),
