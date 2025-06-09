@@ -82,6 +82,41 @@ mod recurring_tests {
             .await
             .expect("Failed to get recurring orders");
 
-        assert!(history.all.is_some())
+        assert!(
+            !history.all.expect("No orders found").is_empty(),
+            "Should have at least one order in history"
+        );
+
+        let req = GetRecurringOrders::new(
+            RecurringOrderType::Price,
+            OrderStatus::History,
+            "372sKPyyiwU5zYASHzqvYY48Sv4ihEujfN5rGFKhVQ9j",
+        );
+
+        let history = client
+            .get_recurring_orders(&req)
+            .await
+            .expect("Failed to get recurring orders");
+
+        assert!(
+            !history.price.expect("No orders found").is_empty(),
+            "Should have at least one order in history"
+        );
+
+        let req = GetRecurringOrders::new(
+            RecurringOrderType::Time,
+            OrderStatus::History,
+            "HY2znfTPZLMbtGNayNR81qWL9jWcwjJp6W1KApjtN9tW",
+        );
+
+        let history = client
+            .get_recurring_orders(&req)
+            .await
+            .expect("Failed to get recurring orders");
+
+        assert!(
+            !history.time.expect("No orders found").is_empty(),
+            "Should have at least one order in history"
+        );
     }
 }
