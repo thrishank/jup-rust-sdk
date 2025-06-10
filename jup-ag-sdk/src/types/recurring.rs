@@ -195,6 +195,21 @@ pub struct PriceDeposit {
     pub user: String,
 }
 
+impl PriceDeposit {
+    /// # Arguments
+    ///
+    /// * `amount` - The amount to deposit
+    /// * `order` - The recurring order account address
+    /// * `user` - The user account address
+    pub fn new(amount: u64, order: impl Into<String>, user: impl Into<String>) -> Self {
+        Self {
+            amount,
+            order: order.into(),
+            user: user.into(),
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PriceWithdraw {
@@ -207,6 +222,28 @@ pub struct PriceWithdraw {
 
     /// Possible values: [In, Out]
     pub input_or_output: String,
+}
+
+impl PriceWithdraw {
+    /// # Arguments
+    ///
+    /// * `amount` - The amount to withdraw
+    /// * `order` - The recurring order account address
+    /// * `user` - The user account address
+    /// * `input_or_output` - The withdrawal direction ("In" or "Out")
+    pub fn new(
+        amount: u64,
+        order: impl Into<String>,
+        user: impl Into<String>,
+        input_or_output: impl Into<String>,
+    ) -> Self {
+        Self {
+            amount,
+            order: order.into(),
+            user: user.into(),
+            input_or_output: input_or_output.into(),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -224,6 +261,15 @@ pub struct ExecuteRecurringRequest {
     pub request_id: String,
 
     pub signed_transaction: String,
+}
+
+impl ExecuteRecurringRequest {
+    pub fn new(request_id: impl Into<String>, signed_transaction: impl Into<String>) -> Self {
+        Self {
+            request_id: request_id.into(),
+            signed_transaction: signed_transaction.into(),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -280,6 +326,7 @@ impl GetRecurringOrders {
         self
     }
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RecurringOrders {
@@ -288,9 +335,112 @@ pub struct RecurringOrders {
     pub total_pages: u64,
     pub user: String,
     #[serde(default)]
-    pub time: Option<Vec<serde_json::Value>>,
+    pub time: Option<Vec<TimeOrder>>,
     #[serde(default)]
-    pub price: Option<Vec<serde_json::Value>>,
+    pub price: Option<Vec<PriceOrder>>,
     #[serde(default)]
-    pub all: Option<Vec<serde_json::Value>>,
+    pub all: Option<Vec<Order>>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Order {
+    Time(TimeOrder),
+    Price(PriceOrder),
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PriceOrder {
+    pub close_tx: String,
+    pub closed_by: String,
+    pub created_at: String,
+    pub estimated_usdc_value_spent: String,
+    pub in_deposited: String,
+    pub in_left: String,
+    pub in_used: String,
+    pub in_withdrawn: String,
+    pub incremental_usd_value: String,
+    pub input_mint: String,
+    pub open_tx: String,
+    pub order_interval: String,
+    pub order_key: String,
+    pub out_received: String,
+    pub out_withdrawn: String,
+    pub output_mint: String,
+    pub raw_estimated_usdc_value_spent: String,
+    pub raw_in_deposited: String,
+    pub raw_in_left: String,
+    pub raw_in_used: String,
+    pub raw_in_withdrawn: String,
+    pub raw_incremental_usd_value: String,
+    pub raw_out_received: String,
+    pub raw_out_withdrawn: String,
+    pub raw_supposed_usd_value: String,
+    pub start_at: String,
+    pub status: String,
+    pub supposed_usd_value: String,
+    pub trades: Vec<Trade>,
+    pub updated_at: String,
+    pub user_pubkey: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TimeOrder {
+    pub close_tx: String,
+    pub created_at: String,
+    pub cycle_frequency: String,
+    pub in_amount_per_cycle: String,
+    pub in_deposited: String,
+    pub in_used: String,
+    pub in_withdrawn: String,
+    pub input_mint: String,
+    pub max_out_amount: String,
+    pub min_out_amount: String,
+    pub open_tx: String,
+    pub order_key: String,
+    pub out_received: String,
+    pub out_withdrawn: String,
+    pub output_mint: String,
+    pub raw_in_amount_per_cycle: String,
+    pub raw_in_deposited: String,
+    pub raw_in_used: String,
+    pub raw_in_withdrawn: String,
+    pub raw_max_out_amount: String,
+    pub raw_min_out_amount: String,
+    pub raw_out_received: String,
+    pub raw_out_withdrawn: String,
+    pub trades: Vec<Trade>,
+    pub updated_at: String,
+    pub user_closed: bool,
+    pub user_pubkey: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Trade {
+    pub action: String,
+    pub confirmed_at: String,
+    pub fee_amount: String,
+    pub fee_mint: String,
+    pub input_amount: String,
+    pub input_mint: String,
+    pub keeper: String,
+    pub order_key: String,
+    pub output_amount: String,
+    pub output_mint: String,
+    #[serde(default)]
+    pub product_meta: Option<ProductMeta>,
+    pub raw_fee_amount: String,
+    pub raw_input_amount: String,
+    pub raw_output_amount: String,
+    pub tx_id: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub struct ProductMeta {
+    pub new_actual_usdc_value: String,
+    pub value: String,
 }

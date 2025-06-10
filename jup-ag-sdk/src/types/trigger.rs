@@ -162,10 +162,16 @@ pub struct TriggerResponse {
     pub request_id: String,
 
     /// Unsigned base-64 encoded transaction
+    #[serde(default)]
     pub transaction: String,
 
-    /// Base-58 account which is the Trigger Order account
-    pub order: String,
+    /// cancel trigger orders
+    #[serde(default)]
+    pub transactions: Option<Vec<String>>,
+
+    /// solana PDA Trigger Order account
+    #[serde(default)]
+    pub order: Option<String>,
 
     pub code: u8,
 }
@@ -190,11 +196,27 @@ impl ExecuteTriggerOrder {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct ExecuteTriggerOrderResponse {
+    pub code: u8,
+
+    /// transaction signature
+    pub signature: String,
+
+    /// status of the transaction
+    pub status: String,
+
+    /// solana PDA Trigger Order account
+    #[serde(default)]
+    pub order: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CancelTriggerOrder {
+    /// maker address
     pub maker: String,
 
-    /// Base-58 account which is the Trigger Order account
+    /// solana PDA Trigger Order account
     pub order: String,
 
     /// In microlamports, defaults to 95th percentile of priority fees
@@ -204,6 +226,9 @@ pub struct CancelTriggerOrder {
 }
 
 impl CancelTriggerOrder {
+    /// Arguments:
+    /// maker: &str - The maker's wallet address
+    /// order: &str - The solana PDA Trigger Order account
     pub fn new(maker: &str, order: &str) -> Self {
         Self {
             maker: maker.to_string(),
@@ -218,7 +243,7 @@ impl CancelTriggerOrder {
 pub struct CancelTriggerOrders {
     pub maker: String,
 
-    /// Base-58 account which is the Trigger Order account
+    /// solana PDA Trigger Order account
     #[serde(serialize_with = "to_comma_string")]
     pub order: Vec<String>,
 
@@ -226,6 +251,25 @@ pub struct CancelTriggerOrders {
     /// Default value: auto
     #[serde(skip_serializing_if = "Option::is_none")]
     pub compute_unit_price: Option<String>,
+}
+
+impl CancelTriggerOrders {
+    /// Arguments:
+    /// maker: &str - The maker's wallet address
+    /// orders: Vec<String> - Vector of solana PDA Trigger Order accounts
+    pub fn new(maker: &str, orders: Vec<String>) -> Self {
+        Self {
+            maker: maker.to_string(),
+            order: orders,
+            compute_unit_price: None,
+        }
+    }
+
+    /// Sets the compute unit price in microlamports
+    pub fn compute_unit_price(mut self, price: &str) -> Self {
+        self.compute_unit_price = Some(price.to_string());
+        self
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
