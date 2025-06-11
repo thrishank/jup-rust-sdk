@@ -48,7 +48,7 @@ async fn main() {
     let quote = client.get_ultra_order(&ultra).await
         .expect("Failed to get ultra order");
 
-    // sign the transaction. Checkout examples/src/ultra.rs on how to sign the transaction
+    // sign the transaction. Checkout examples/src/lib.rs on how to sign the transaction
 
     // execute the signed transaction
     let execute = UltraExecuteOrderRequest {
