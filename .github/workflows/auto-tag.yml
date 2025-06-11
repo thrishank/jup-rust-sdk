@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'jup-ag-sdk/Cargo.toml'
+# TODO: Uncomment this later
+#    paths:
+#      - 'jup-ag-sdk/Cargo.toml'
 
 # Add permissions section
 permissions:
