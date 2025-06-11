@@ -1,0 +1,34 @@
+name: Publish Crate
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  publish:
+    name: Publish to crates.io
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      
+      - name: Verify version matches tag
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          CARGO_VERSION=$(grep -m 1 "version" jup-ag-sdk/Cargo.toml | sed 's/.*= "//' | sed 's/".*//')
+          if [ "$VERSION" != "$CARGO_VERSION" ]; then
+            echo "Error: Git tag ($VERSION) doesn't match Cargo.toml version ($CARGO_VERSION)"
+            exit 1
+          fi
+      
+      - name: Publish
+        uses: katyo/publish-crates@v2
+        with:
+          registry-token: ${{ secrets.CRATES_IO_TOKEN }}
+          path: './jup-ag-sdk'
