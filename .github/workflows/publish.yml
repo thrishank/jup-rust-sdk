@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*.*.*'
+  # Add this to allow manual triggering from GitHub UI
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -11,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Get all history for tags
 
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
@@ -22,6 +26,8 @@ jobs:
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
           CARGO_VERSION=$(grep -m 1 "version" jup-ag-sdk/Cargo.toml | sed 's/.*= "//' | sed 's/".*//')
+          echo "Tag version: $VERSION"
+          echo "Cargo version: $CARGO_VERSION"
           if [ "$VERSION" != "$CARGO_VERSION" ]; then
             echo "Error: Git tag ($VERSION) doesn't match Cargo.toml version ($CARGO_VERSION)"
             exit 1
