@@ -13,7 +13,7 @@ or Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-jup-ag-sdk = "0.1.5"
+jup-ag-sdk = "1.0.0"
 ```
 
 ## Features
@@ -34,33 +34,48 @@ use jup_ag_sdk::{
 
 #[tokio::main]
 async fn main() {
-    // initalize the client
+    // Initialize the Jupiter client with the Lite API endpoint
     let client = JupiterClient::new("https://lite-api.jup.ag");
 
-    // Create an ultra order request to swap 10 USDC to SOL
-    let ultra = UltraOrderRequest::new(
-        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-        "So11111111111111111111111111111111111111112",
-        10_000_000, // 6 decimals (USDC)
-    ).add_taker("your wallet address");
+    // Define the swap: 10 USDC (6 decimals) to SOL
+    let input_token = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"; // USDC
+    let output_token = "So11111111111111111111111111111111111111112"; // SOL
+    let amount = 10_000_000; // 10 USDC (in micro units)
 
-    // fetch the quote
-    let quote = client.get_ultra_order(&ultra).await
-        .expect("Failed to get ultra order");
+    // Create an order request and specify the taker's wallet address
+    let order_request = UltraOrderRequest::new(input_token, output_token, amount)
+        .add_taker("your taker wallet address");
+
+    // Fetch the unsigned transaction and request ID from Jupiter
+    let order_response = client
+        .get_ultra_order(&order_request)
+        .await
+        .expect("Failed to fetch ultra order");
+
+    let unsigned_tx_base64 = order_response
+        .transaction
+        .expect("No transaction found in ultra order response");
 
     // sign the transaction. Checkout examples/src/ultra.rs on how to sign the transaction
 
     // execute the signed transaction
-    let execute = UltraExecuteOrderRequest {
-        signed_transaction: base64_signed_tx,
+    let execute_request = UltraExecuteOrderRequest {
+        signed_transaction: signed_tx_base64,
         request_id: quote.request_id,
     };
 
-    // Execute the transaction
-    let response = client.ultra_execute_order(&execute).await
+    // Send the signed transaction to Jupiter for execution
+    let execute_response = client
+        .ultra_execute_order(&execute_request)
+        .await
         .expect("Failed to execute transaction");
 
-    println!("Transaction: {}", response.signature);
+    // Print the transaction signature
+    let tx_signature = execute_response
+        .signature
+        .expect("No signature found in execution response");
+
+    println!("✅ Transaction submitted: {}", tx_signature);
 }
 ```
 
