@@ -1,6 +1,6 @@
 [package]
 name = "jup-ag-sdk"
-version = "1.0.2"
+version = "1.0.3"
 edition = "2024"
 license-file = "../LICENSE"
 readme = "../README.md"
