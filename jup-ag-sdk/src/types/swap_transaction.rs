@@ -81,6 +81,8 @@ pub struct SwapRequest {
     pub quote_response: QuoteResponse,
 }
 
+/// Only one of these fields should be set at a time.
+/// Use either `jito_tip_lamports` or `priority_level_with_max_lamports`, not both.
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PrioritizationFeeLamports {
@@ -187,9 +189,6 @@ impl SwapRequest {
     }
 
     /// Set prioritization fee lamports
-    ///
-    /// Note:
-    /// - Cannot be combined with `priority_level_with_max_lamports`.
     pub fn prioritization_fee_jito_tip(mut self, fee: u64) -> Self {
         self.prioritization_fee_lamports = Some(PrioritizationFeeLamports {
             jito_tip_lamports: Some(fee),
@@ -203,9 +202,6 @@ impl SwapRequest {
     /// Allows specifying both:
     /// - Priority level (e.g., `medium`, `high`)
     /// - Maximum cap on lamports paid
-    ///
-    /// Note:
-    /// - Cannot be combined with `jito_tip_lamports`.
     pub fn prioritization_fee_config(
         mut self,
         max_lamports: u32,
