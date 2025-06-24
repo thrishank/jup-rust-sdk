@@ -84,8 +84,11 @@ pub struct SwapRequest {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PrioritizationFeeLamports {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub jito_tip_lamports: Option<u64>,
-    pub priority_level_with_max_lamports: PriorityLevelWithMaxLamports,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub priority_level_with_max_lamports: Option<PriorityLevelWithMaxLamports>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -184,30 +187,36 @@ impl SwapRequest {
     }
 
     /// Set prioritization fee lamports
+    ///
+    /// Note:
+    /// - Cannot be combined with `priority_level_with_max_lamports`.
     pub fn prioritization_fee_jito_tip(mut self, fee: u64) -> Self {
         self.prioritization_fee_lamports = Some(PrioritizationFeeLamports {
             jito_tip_lamports: Some(fee),
-            priority_level_with_max_lamports: PriorityLevelWithMaxLamports {
-                max_lamports: 0,
-                priority_level: PriorityLevel::Medium,
-            },
+            priority_level_with_max_lamports: None,
         });
         self
     }
 
-    /// set prioritization config
+    /// Sets a priority fee configuration based on estimated network congestion
+    ///
+    /// Allows specifying both:
+    /// - Priority level (e.g., `medium`, `high`)
+    /// - Maximum cap on lamports paid
+    ///
+    /// Note:
+    /// - Cannot be combined with `jito_tip_lamports`.
     pub fn prioritization_fee_config(
         mut self,
-        jito_tip: Option<u64>,
         max_lamports: u32,
         priority_level: PriorityLevel,
     ) -> Self {
         self.prioritization_fee_lamports = Some(PrioritizationFeeLamports {
-            jito_tip_lamports: jito_tip,
-            priority_level_with_max_lamports: PriorityLevelWithMaxLamports {
+            jito_tip_lamports: None,
+            priority_level_with_max_lamports: Some(PriorityLevelWithMaxLamports {
                 max_lamports,
                 priority_level,
-            },
+            }),
         });
         self
     }
