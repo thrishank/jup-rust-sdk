@@ -68,7 +68,7 @@ pub struct SwapRequest {
     /// When enabled, it estimates slippage and apply it in the swap transaction directly, overwriting the slippageBps parameter in the quote response.
     /// Used together with dynamicSlippage in /quote, otherwise the slippage used will be the one in the /quote's slippageBps
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub dyanmic_slippage: Option<bool>,
+    pub dynamic_slippage: Option<bool>,
 
     /// To use an exact compute unit price to calculate priority fee
     /// computeUnitLimit (1400000) * computeUnitPriceMicroLamports
@@ -143,7 +143,7 @@ impl SwapRequest {
             destination_token_account: None,
             dynamic_compute_unit_limit: None,
             skip_user_account_rpc_calls: None,
-            dyanmic_slippage: None,
+            dynamic_slippage: None,
             compute_unit_price_micro_lamports: None,
             blockhash_slots_to_expiry: None,
             quote_response: quote,
@@ -245,8 +245,8 @@ impl SwapRequest {
     /// Enables dynamic slippage estimation.
     ///
     /// If enabled, slippage will be recalculated at swap-time instead of using a fixed value.
-    pub fn dyanmic_slippage(mut self, dynamic: bool) -> Self {
-        self.dyanmic_slippage = Some(dynamic);
+    pub fn dynamic_slippage(mut self, dynamic: bool) -> Self {
+        self.dynamic_slippage = Some(dynamic);
         self
     }
 
