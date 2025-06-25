@@ -13,7 +13,7 @@ or Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-jup-ag-sdk = "1.0.4"
+jup-ag-sdk = "1.0.5"
 ```
 
 ## Features
