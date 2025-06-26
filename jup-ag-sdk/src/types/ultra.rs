@@ -324,3 +324,111 @@ pub struct Router {
     pub name: String,
     pub icon: String,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TokenStats {
+    pub price_change: Option<f64>,
+    pub holder_change: Option<f64>,
+    pub liquidity_change: Option<f64>,
+    pub volume_change: Option<f64>,
+    pub buy_volume: Option<f64>,
+    pub sell_volume: Option<f64>,
+    pub buy_organic_volume: Option<f64>,
+    pub sell_organic_volume: Option<f64>,
+    pub num_buys: Option<u64>,
+    pub num_sells: Option<u64>,
+    pub num_traders: Option<u64>,
+    pub num_organic_buyers: Option<u64>,
+    pub num_net_buyers: Option<u64>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FirstPool {
+    pub id: String,
+    pub created_at: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Audit {
+    #[serde(default)]
+    pub is_sus: Option<bool>,
+    #[serde(default)]
+    pub mint_authority_disabled: Option<bool>,
+    #[serde(default)]
+    pub freeze_authority_disabled: Option<bool>,
+    #[serde(default)]
+    pub top_holders_percentage: Option<f64>,
+    #[serde(default)]
+    pub dev_balance_percentage: Option<f64>,
+    #[serde(default)]
+    pub dev_migrations: Option<u64>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TokenInfo {
+    pub id: String,
+    pub name: String,
+    pub symbol: String,
+    #[serde(default)]
+    pub icon: Option<String>,
+    pub decimals: u8,
+    #[serde(default)]
+    pub twitter: Option<String>,
+    #[serde(default)]
+    pub telegram: Option<String>,
+    #[serde(default)]
+    pub website: Option<String>,
+    pub dev: String,
+    pub circ_supply: f64,
+    pub total_supply: f64,
+    pub token_program: String,
+
+    #[serde(default)]
+    pub launchpad: Option<String>,
+    #[serde(default)]
+    pub partner_config: Option<String>,
+    #[serde(default)]
+    pub graduated_pool: Option<String>,
+    #[serde(default)]
+    pub graduated_at: Option<String>,
+    #[serde(default)]
+    pub mint_authority: Option<String>,
+    #[serde(default)]
+    pub freeze_authority: Option<String>,
+
+    pub first_pool: FirstPool,
+    pub holder_count: u64,
+    #[serde(default)]
+    pub audit: Option<Audit>,
+    pub organic_score: f64,
+    pub organic_score_label: String,
+    #[serde(default)]
+    pub is_verified: Option<bool>,
+    #[serde(default)]
+    pub cexes: Vec<String>,
+    #[serde(default)]
+    pub tags: Vec<String>,
+    pub fdv: f64,
+    pub mcap: f64,
+    pub usd_price: f64,
+    pub price_block_id: u64,
+    pub liquidity: f64,
+
+    #[serde(default)]
+    pub stats5m: Option<TokenStats>,
+    #[serde(default)]
+    pub stats1h: Option<TokenStats>,
+    #[serde(default)]
+    pub stats6h: Option<TokenStats>,
+    #[serde(default)]
+    pub stats24h: Option<TokenStats>,
+    #[serde(default)]
+    pub ct_likes: Option<u64>,
+    #[serde(default)]
+    pub smart_ct_likes: Option<u64>,
+    pub updated_at: String,
+}
