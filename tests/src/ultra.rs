@@ -132,6 +132,32 @@ mod ultra_tests {
     }
 
     #[tokio::test]
+    async fn test_ultra_token_search() {
+        let client = create_test_client();
+
+        let mints = vec!["JUP".to_string()];
+
+        let tokens = client
+            .ultra_token_search(&mints)
+            .await
+            .expect("Failed to search tokens");
+
+        let token = &tokens[0];
+        assert_eq!(token.id, JUP_MINT, "Token ID should match JUP");
+        assert!(!token.id.is_empty());
+        assert!(!token.name.is_empty());
+        assert!(!token.symbol.is_empty());
+        assert!(token.decimals == 6);
+        assert!(token.circ_supply > 0.0);
+        assert!(token.total_supply > 0.0);
+        assert!(token.holder_count > 0);
+        assert!(token.fdv > 0.0);
+        assert!(token.mcap > 0.0);
+        assert!(token.usd_price > 0.0);
+        assert!(token.liquidity > 0.0);
+    }
+
+    #[tokio::test]
     async fn test_routers() {
         let client = create_test_client();
 

@@ -382,7 +382,8 @@ pub struct TokenInfo {
     pub telegram: Option<String>,
     #[serde(default)]
     pub website: Option<String>,
-    pub dev: String,
+    #[serde(default)]
+    pub dev: Option<String>,
     pub circ_supply: f64,
     pub total_supply: f64,
     pub token_program: String,

@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod ultra_tests {
+mod trigger_tests {
     use jup_ag_sdk::types::{
         CreateTriggerOrder, ExecuteTriggerOrder, GetTriggerOrders, OrderStatus,
     };
