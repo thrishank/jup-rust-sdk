@@ -214,7 +214,7 @@ impl JupiterClient {
     ///     String::from("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
     ///     String::from("JUP")
     /// ];
-    /// let shield_info = client.ultra_token_search(&mints).await?;
+    /// let token_info = client.ultra_token_search(&mints).await?;
     /// ```
     pub async fn ultra_token_search(
         &self,
