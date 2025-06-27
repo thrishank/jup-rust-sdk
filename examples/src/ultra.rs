@@ -49,3 +49,16 @@ pub async fn ultra() {
 
     println!("✅ Transaction submitted: {}", tx_signature);
 }
+
+pub async fn ultra_token_search() {
+    let client = JupiterClient::new("https:://lite-api.jup.ag");
+
+    let mints = vec![String::from("JUP")];
+
+    let data = client
+        .ultra_token_search(&mints)
+        .await
+        .expect("failed to get token info");
+
+    println!("data: {:?}", data);
+}

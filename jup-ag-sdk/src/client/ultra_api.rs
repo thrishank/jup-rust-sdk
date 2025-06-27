@@ -1,8 +1,8 @@
 use crate::{
     error::{JupiterClientError, handle_response},
     types::{
-        Router, Shield, TokenBalancesResponse, UltraExecuteOrderRequest, UltraExecuteOrderResponse,
-        UltraOrderRequest, UltraOrderResponse,
+        Router, Shield, TokenBalancesResponse, TokenInfo, UltraExecuteOrderRequest,
+        UltraExecuteOrderResponse, UltraOrderRequest, UltraOrderResponse,
     },
 };
 
@@ -186,6 +186,57 @@ impl JupiterClient {
 
         match response.json::<Shield>().await {
             Ok(token_balances) => Ok(token_balances),
+            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        }
+    }
+
+    /// search for a token and its information by its symbol, name or mint address
+    ///
+    /// Limit to 100 mint addresses in query
+    ///
+    /// # Arguments
+    ///
+    /// * `mints` - A slice of mint addresses (`&[String]`) to inspect.
+    ///
+    /// # Returns
+    ///
+    /// * `Ok(Vec<TokenInfo>)` containing token safety metadata.
+    /// * `Err` if the request or deserialization fails.
+    ///
+    /// # Jupiter API Reference
+    ///
+    /// - [Search Endpoint](https://dev.jup.ag/docs/api/ultra-api/search)
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let mints = vec![
+    ///     String::from("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+    ///     String::from("JUP")
+    /// ];
+    /// let token_info = client.ultra_token_search(&mints).await?;
+    /// ```
+    pub async fn ultra_token_search(
+        &self,
+        mints: &[String],
+    ) -> Result<Vec<TokenInfo>, JupiterClientError> {
+        let query_params = vec![("query", mints.join(","))];
+
+        let response = match self
+            .client
+            .get(format!("{}/ultra/v1/search", self.base_url))
+            .query(&query_params)
+            .send()
+            .await
+        {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        let response = handle_response(response).await?;
+
+        match response.json::<Vec<TokenInfo>>().await {
+            Ok(data) => Ok(data),
             Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
         }
     }
