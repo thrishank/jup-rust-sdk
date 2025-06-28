@@ -121,7 +121,7 @@ impl JupiterClient {
     ///    .get_mints_by_category(Category::TopTrending, Interval::OneHour, None)
     ///    .await.expect("failed to get tokens");
     ///   ```
-    pub async fn get_mints_by_category(
+    pub async fn get_tokens_by_category(
         &self,
         category: Category,
         interval: Interval,
