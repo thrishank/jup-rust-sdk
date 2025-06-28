@@ -138,3 +138,15 @@ impl fmt::Display for Interval {
         write!(f, "{}", s)
     }
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Price {
+    pub usd_price: f64,
+
+    pub block_id: u64,
+
+    pub decimals: u8,
+
+    pub price_change_24h: f64,
+}

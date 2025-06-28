@@ -1,8 +1,10 @@
+use std::collections::HashMap;
+
 use super::JupiterClient;
 use crate::{
     error::{JupiterClientError, handle_response},
     types::{
-        Category, Interval, NewTokens, TokenInfo, TokenInfoResponse, TokenPriceRequest,
+        Category, Interval, NewTokens, Price, TokenInfo, TokenInfoResponse, TokenPriceRequest,
         TokenPriceResponse,
     },
 };
@@ -160,6 +162,44 @@ impl JupiterClient {
 
         match response.json::<Vec<TokenInfo>>().await {
             Ok(mints) => Ok(mints),
+            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        }
+    }
+
+    /// Returns prices of specified tokens.
+    ///
+    /// ```
+    /// let client = JupiterClient::new("https://lite-api.jup.ag");
+    ///
+    /// let mints = vec![
+    ///     String::from("So11111111111111111111111111111111111111112"),
+    ///     String::from("JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN"),
+    /// ];
+    ///
+    /// let price = client.get_tokens_price(&mints).await.expect("failed to get token price");
+    /// let jup_price = price.get(&mints[1]).expect("jup not found").usd_price;
+    /// ```
+    pub async fn get_tokens_price(
+        &self,
+        mints: &[String],
+    ) -> Result<HashMap<String, Price>, JupiterClientError> {
+        let query_params = vec![("ids", mints.join(","))];
+
+        let response = match self
+            .client
+            .get(format!("{}/price/v3", self.base_url))
+            .query(&query_params)
+            .send()
+            .await
+        {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        let response = handle_response(response).await?;
+
+        match response.json::<HashMap<String, Price>>().await {
+            Ok(token_price) => Ok(token_price),
             Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
         }
     }
