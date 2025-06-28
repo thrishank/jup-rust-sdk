@@ -204,6 +204,7 @@ impl JupiterClient {
         }
     }
 
+    #[deprecated(note = "This endpoint is deprecated. use `get_tokens_price` instead")]
     /// Returns prices of specified tokens.
     /// ```
     /// let client = JupiterClient::new("https://lite-api.jup.ag")
@@ -251,6 +252,7 @@ impl JupiterClient {
         }
     }
 
+    #[deprecated]
     /// Returns the specified mint address's token information and metadata.
     ///
     /// ```
@@ -277,6 +279,7 @@ impl JupiterClient {
         }
     }
 
+    #[deprecated]
     /// Returns the mints involved in a market.
     pub async fn get_market_mints(
         &self,
@@ -299,6 +302,7 @@ impl JupiterClient {
         }
     }
 
+    #[deprecated]
     /// Returns a list of all mints tradable via Jupiter routing.
     /// This endpoint returns greater than 32MB amount of data. May take a while to complete.
     pub async fn get_tradable_mints(&self) -> Result<Vec<String>, JupiterClientError> {
@@ -316,6 +320,7 @@ impl JupiterClient {
         }
     }
 
+    #[deprecated(note = "This fn is deprecated. Use `get_recent_tokens` instead.")]
     /// get new tokens with metadata, created at timestamp and markets.
     pub async fn get_new_tokens(
         &self,
@@ -346,6 +351,7 @@ impl JupiterClient {
         }
     }
 
+    #[deprecated]
     /// Returns all tokens with all metadata.
     /// Do note that calling this endpoint's resource will return a large payload of 300+MB, which would introduce some latency in the call.
     /// Please use carefully and intentionally, else utilize the other endpoints.
