@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize, Serializer};
 use std::collections::HashMap;
+use std::fmt;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -98,4 +99,42 @@ pub struct NewTokens {
     pub known_markets: Vec<String>,
     pub mint_authority: Option<String>,
     pub freeze_authority: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum Category {
+    TopOrganicScore,
+    TopTraded,
+    TopTrending,
+}
+
+impl fmt::Display for Category {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            Self::TopOrganicScore => "toporganicscore",
+            Self::TopTraded => "toptraded",
+            Self::TopTrending => "toptrending",
+        };
+        write!(f, "{}", s)
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum Interval {
+    FiveMinutes,
+    OneHour,
+    SixHours,
+    TwentyFourHours,
+}
+
+impl fmt::Display for Interval {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            Self::FiveMinutes => "5m",
+            Self::OneHour => "1h",
+            Self::SixHours => "6h",
+            Self::TwentyFourHours => "24h",
+        };
+        write!(f, "{}", s)
+    }
 }

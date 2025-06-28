@@ -416,5 +416,5 @@ pub struct TokenInfo {
 
     pub ct_likes: Option<u64>,
     pub smart_ct_likes: Option<u64>,
-    pub updated_at: String,
+    pub updated_at: Option<String>,
 }

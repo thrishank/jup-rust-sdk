@@ -1,10 +1,169 @@
 use super::JupiterClient;
 use crate::{
     error::{JupiterClientError, handle_response},
-    types::{NewTokens, TokenInfo, TokenInfoResponse, TokenPriceRequest, TokenPriceResponse},
+    types::{
+        Category, Interval, NewTokens, TokenInfo, TokenInfoResponse, TokenPriceRequest,
+        TokenPriceResponse,
+    },
 };
 
 impl JupiterClient {
+    /// search for a token and its information by its symbol, name or mint address
+    ///
+    /// Limit to 100 mint addresses in query
+    /// Default to 20 mints in response when searching via symbol or name
+    ///
+    /// # Arguments
+    ///
+    /// * `mints` - A slice of mint addresses (`&[String]`) to inspect.
+    ///
+    /// # Returns
+    ///
+    /// * `Ok(Vec<TokenInfo>)` containing token safety metadata.
+    /// * `Err` if the request or deserialization fails.
+    ///
+    /// # Jupiter API Reference
+    ///
+    /// - [Search Endpoint](https://dev.jup.ag/docs/api/ultra-api/search)
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let mints = vec![
+    ///     String::from("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
+    ///     String::from("JUP")
+    /// ];
+    /// let token_info = client.token_search(&mints).await?;
+    /// ```
+    pub async fn token_search(
+        &self,
+        mints: &[String],
+    ) -> Result<Vec<TokenInfo>, JupiterClientError> {
+        let query_params = vec![("query", mints.join(","))];
+
+        let response = match self
+            .client
+            .get(format!("{}/tokens/v2/search", self.base_url))
+            .query(&query_params)
+            .send()
+            .await
+        {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        let response = handle_response(response).await?;
+
+        match response.json::<Vec<TokenInfo>>().await {
+            Ok(data) => Ok(data),
+            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        }
+    }
+
+    /// Returns a list of mints with specified tag(s) along with their metadata.
+    /// tags: verified, lst, token-2022, etc
+    /// ```
+    ///
+    /// let tags = vec![String::from("verified")];
+    /// let tagged = client
+    /// .get_mints_by_tags(&tags)
+    ///    .await
+    ///    .expect("failed to get mints by tags");
+    /// ```
+    pub async fn get_mints_by_tags(
+        &self,
+        tags: &[String],
+    ) -> Result<Vec<TokenInfo>, JupiterClientError> {
+        let query_params = vec![("query", tags.join(","))];
+
+        let response = match self
+            .client
+            .get(format!("{}/tokens/v2/tag", self.base_url))
+            .query(&query_params)
+            .send()
+            .await
+        {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        let response = handle_response(response).await?;
+
+        match response.json::<Vec<TokenInfo>>().await {
+            Ok(mints) => Ok(mints),
+            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        }
+    }
+
+    /// Returns a list of mints and their information for the given category and time interval.
+    ///
+    /// # Parameters
+    /// - `category` (`Category`) — Required  
+    ///   The token ranking category. Possible values:  
+    ///   - `toporganicscore` — Top tokens by organic score  
+    ///   - `toptraded` — Top traded tokens  
+    ///   - `toptrending` — Top trending tokens  
+    ///
+    /// - `interval` (`Interval`) — Required  
+    ///   Time interval for the ranking query. Possible values:  
+    ///   - `5m` — Last 5 minutes  
+    ///   - `1h` — Last 1 hour  
+    ///   - `6h` — Last 6 hours  
+    ///   - `24h` — Last 24 hours  
+    ///
+    /// - `limit` (`Option<u8>`) — Optional  
+    ///   Maximum number of results to return (default is 50, maximum is 100).  
+    ///   Must be between 1 and 100 inclusive if provided.  
+    ///   ```
+    ///   let tokens = client
+    ///    .get_mints_by_category(Category::TopTrending, Interval::OneHour, None)
+    ///    .await.expect("failed to get tokens");
+    ///   ```
+    pub async fn get_mints_by_category(
+        &self,
+        category: Category,
+        interval: Interval,
+        limit: Option<u8>,
+    ) -> Result<Vec<TokenInfo>, JupiterClientError> {
+        let url = format!("{}/tokens/v2/{}/{}", self.base_url, category, interval);
+
+        let mut request = self.client.get(url);
+
+        if let Some(limit) = limit {
+            request = request.query(&[("limit", limit)]);
+        }
+
+        let response = match request.send().await {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        let response = handle_response(response).await?;
+
+        match response.json::<Vec<TokenInfo>>().await {
+            Ok(mints) => Ok(mints),
+            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        }
+    }
+
+    /// Returns an vec of mints that recently had their first created pool
+    /// Default to 30 mints in response
+    pub async fn get_recent_tokens(&self) -> Result<Vec<TokenInfo>, JupiterClientError> {
+        let url = format!("{}/tokens/v2/recent", self.base_url);
+
+        let response = match self.client.get(&url).send().await {
+            Ok(resp) => resp,
+            Err(e) => return Err(JupiterClientError::RequestError(e)),
+        };
+
+        let response = handle_response(response).await?;
+
+        match response.json::<Vec<TokenInfo>>().await {
+            Ok(mints) => Ok(mints),
+            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        }
+    }
+
     /// Returns prices of specified tokens.
     /// ```
     /// let client = JupiterClient::new("https://lite-api.jup.ag")
@@ -115,56 +274,6 @@ impl JupiterClient {
             Ok(mints) => Ok(mints),
             Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
         }
-    }
-
-    /// Returns a list of mints with specified tag(s) along with their metadata.
-    /// tags: verified, lst, token-2022, etc
-    /// ```
-    ///
-    /// let tags = vec![String::from("verified")];
-    /// let tagged = client
-    /// .get_mints_by_tags(&tags)
-    ///    .await
-    ///    .expect("failed to get mints by tags");
-    /// ```
-    pub async fn get_mints_by_tags(
-        &self,
-        tags: &[String],
-    ) -> Result<Vec<TokenInfo>, JupiterClientError> {
-        let query_params = vec![("query", tags.join(","))];
-
-        let response = match self
-            .client
-            .get(format!("{}/tokens/v2/tag", self.base_url))
-            .query(&query_params)
-            .send()
-            .await
-        {
-            Ok(resp) => resp,
-            Err(e) => return Err(JupiterClientError::RequestError(e)),
-        };
-
-        let response = handle_response(response).await?;
-
-        let text = response.text().await.map_err(|e| {
-            JupiterClientError::DeserializationError(format!("Failed to read response text: {}", e))
-        })?;
-
-        // DEBUG: print raw JSON string
-        println!("Raw response body: {}", text);
-
-        match serde_json::from_str::<Vec<TokenInfo>>(&text) {
-            Ok(ultra_order_response) => Ok(ultra_order_response),
-            Err(e) => {
-                eprintln!("Deserialization error: {}", e);
-                Err(JupiterClientError::DeserializationError(e.to_string()))
-            }
-        }
-
-        // match response.json::<Vec<TokenInfo>>().await {
-        //     Ok(mints) => Ok(mints),
-        //     Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
-        // }
     }
 
     /// get new tokens with metadata, created at timestamp and markets.
