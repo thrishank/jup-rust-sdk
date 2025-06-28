@@ -1,7 +1,7 @@
 use super::JupiterClient;
 use crate::{
     error::{JupiterClientError, handle_response},
-    types::{NewTokens, TokenInfoResponse, TokenPriceRequest, TokenPriceResponse},
+    types::{NewTokens, TokenInfo, TokenInfoResponse, TokenPriceRequest, TokenPriceResponse},
 };
 
 impl JupiterClient {
@@ -130,19 +130,41 @@ impl JupiterClient {
     pub async fn get_mints_by_tags(
         &self,
         tags: &[String],
-    ) -> Result<Vec<TokenInfoResponse>, JupiterClientError> {
-        let url = format!("{}/tokens/v1/tagged/{}", self.base_url, tags.join(","));
-        let response = match self.client.get(&url).send().await {
+    ) -> Result<Vec<TokenInfo>, JupiterClientError> {
+        let query_params = vec![("query", tags.join(","))];
+
+        let response = match self
+            .client
+            .get(format!("{}/tokens/v2/tag", self.base_url))
+            .query(&query_params)
+            .send()
+            .await
+        {
             Ok(resp) => resp,
             Err(e) => return Err(JupiterClientError::RequestError(e)),
         };
 
         let response = handle_response(response).await?;
 
-        match response.json::<Vec<TokenInfoResponse>>().await {
-            Ok(mints) => Ok(mints),
-            Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        let text = response.text().await.map_err(|e| {
+            JupiterClientError::DeserializationError(format!("Failed to read response text: {}", e))
+        })?;
+
+        // DEBUG: print raw JSON string
+        println!("Raw response body: {}", text);
+
+        match serde_json::from_str::<Vec<TokenInfo>>(&text) {
+            Ok(ultra_order_response) => Ok(ultra_order_response),
+            Err(e) => {
+                eprintln!("Deserialization error: {}", e);
+                Err(JupiterClientError::DeserializationError(e.to_string()))
+            }
         }
+
+        // match response.json::<Vec<TokenInfo>>().await {
+        //     Ok(mints) => Ok(mints),
+        //     Err(e) => Err(JupiterClientError::DeserializationError(e.to_string())),
+        // }
     }
 
     /// get new tokens with metadata, created at timestamp and markets.
