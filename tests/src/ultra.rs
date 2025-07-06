@@ -150,11 +150,11 @@ mod ultra_tests {
         assert!(token.decimals == 6);
         assert!(token.circ_supply > 0.0);
         assert!(token.total_supply > 0.0);
-        assert!(token.holder_count > 0);
-        assert!(token.fdv > 0.0);
-        assert!(token.mcap > 0.0);
-        assert!(token.usd_price > 0.0);
-        assert!(token.liquidity > 0.0);
+        assert!(token.holder_count.expect("holder_count") > 0);
+        assert!(token.fdv.expect("fdv") > 0.0);
+        assert!(token.mcap.expect("mcap") > 0.0);
+        assert!(token.usd_price.expect("usd price") > 0.0);
+        assert!(token.liquidity.expect("liquidity") > 0.0);
     }
 
     #[tokio::test]

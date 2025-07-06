@@ -1,4 +1,4 @@
-use jup_ag_sdk::{JupiterClient, types::TokenPriceRequest};
+use jup_ag_sdk::{JupiterClient, client};
 
 pub async fn token_balances() {
     let client = JupiterClient::new("https://lite-api.jup.ag");
@@ -31,48 +31,22 @@ pub async fn token_price() {
         "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN".to_string(),
     ];
 
-    let params = TokenPriceRequest::new(&token_mints);
-
     let price = client
-        .get_token_price(&params)
+        .get_tokens_price(&token_mints)
         .await
         .expect("Failed to get token price");
 
     let sol_price = price
-        .data
         .get(token_mints[0].as_str())
         .expect("SOL price not found");
 
-    println!("1 SOL price in USDC: {}", sol_price.price);
+    println!("1 SOL price in USDC: {}", sol_price.usd_price);
 
     let jup_price = price
-        .data
         .get(token_mints[1].as_str())
         .expect("Jup Token price not found");
 
-    println!("1 JUP price USDC:  {}", jup_price.price);
-
-    let params = TokenPriceRequest::new(&token_mints)
-        .with_vs_token("So11111111111111111111111111111111111111112");
-
-    let price = client
-        .get_token_price(&params)
-        .await
-        .expect("Failed to get token price");
-
-    let sol_price = price
-        .data
-        .get(token_mints[0].as_str())
-        .expect("SOL price not found");
-
-    println!("1 SOL price in SOL: {}", sol_price.price);
-
-    let jup_price = price
-        .data
-        .get(token_mints[1].as_str())
-        .expect("Jup Token price not found");
-
-    println!("1 JUP price in SOL:  {}", jup_price.price);
+    println!("1 JUP price USDC:  {}", jup_price.usd_price);
 }
 
 pub async fn token_info() {
@@ -114,4 +88,19 @@ pub async fn get_tokens_from_tags() {
         .expect("failed to get mint");
 
     println!("mints: {}", mints.len())
+}
+
+pub async fn get_trending_tokens() {
+    let client = JupiterClient::new("https:://lite-api.jup.ag");
+
+    let tokens = client
+        .get_tokens_by_category(
+            jup_ag_sdk::types::Category::TopTrending,
+            jup_ag_sdk::types::Interval::TwentyFourHours,
+            Some(10),
+        )
+        .await
+        .expect("failed to get trending tokens");
+
+    println!("trending tokens: {:?}", tokens.len());
 }
