@@ -139,7 +139,7 @@ impl fmt::Display for Interval {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Price {
     pub usd_price: f64,
@@ -148,5 +148,5 @@ pub struct Price {
 
     pub decimals: u8,
 
-    pub price_change_24h: f64,
+    pub price_change_24h: Option<f64>,
 }
