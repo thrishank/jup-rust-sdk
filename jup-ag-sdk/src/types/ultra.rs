@@ -373,8 +373,8 @@ pub struct TokenInfo {
     pub telegram: Option<String>,
     pub website: Option<String>,
     pub dev: Option<String>,
-    pub circ_supply: f64,
-    pub total_supply: f64,
+    pub circ_supply: Option<f64>,
+    pub total_supply: Option<f64>,
     pub token_program: String,
 
     pub launchpad: Option<String>,
@@ -384,7 +384,7 @@ pub struct TokenInfo {
     pub mint_authority: Option<String>,
     pub freeze_authority: Option<String>,
 
-    pub first_pool: FirstPool,
+    pub first_pool: Option<FirstPool>,
     pub holder_count: Option<u64>,
 
     #[serde(default)]
