@@ -159,6 +159,7 @@ impl UltraOrderRequest {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UltraOrderResponse {
+    pub mode: String,
     /// The input token mint address.
     pub input_mint: String,
 
@@ -221,6 +222,31 @@ pub struct UltraOrderResponse {
 
     #[serde(default)]
     pub expire_at: Option<String>,
+
+    #[serde(default)]
+    pub signature_fee_lamports: Option<u64>,
+    #[serde(default)]
+    pub signature_fee_payer: Option<String>,
+
+    #[serde(default)]
+    pub prioritization_fee_payer: Option<String>,
+
+    #[serde(default)]
+    pub rent_fee_lamports: Option<u64>,
+    #[serde(default)]
+    pub rent_fee_payer: Option<String>,
+
+    #[serde(default)]
+    pub router: Option<String>,
+    // Optional USD and numeric impact fields
+    #[serde(default)]
+    pub in_usd_value: Option<f64>,
+    #[serde(default)]
+    pub out_usd_value: Option<f64>,
+    #[serde(default)]
+    pub swap_usd_value: Option<f64>,
+    #[serde(default)]
+    pub price_impact: Option<f64>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
